@@ -151,12 +151,14 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
     <ClInclude Include="cTextureMgr.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="cEnemyBullet.h" />
+    <ClInclude Include="cEnemy2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidsSDL.cpp" />
     <ClCompile Include="cEnemy.cpp" />
     <ClCompile Include="cBkGround.cpp" />
     <ClCompile Include="cBullet.cpp" />
+    <ClCompile Include="cEnemy2.cpp" />
     <ClCompile Include="cEnemyBullet.cpp" />
     <ClCompile Include="cFont.cpp" />
     <ClCompile Include="cFontMgr.cpp" />

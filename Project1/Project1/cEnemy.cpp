@@ -5,6 +5,8 @@ cAsteroid.cpp
 =================
 */
 #include "cEnemy.h"
+#include "cEnemyBullet.h"
+
 
 /*
 =================================================================
@@ -13,7 +15,7 @@ Defualt Constructor
 */
 cEnemy::cEnemy() : cSprite()
 {
-	this->enemyVelocity = { 25, 25 };
+	this->enemyVelocity = { 0, 0 };
 }
 /*
 =================================================================
@@ -31,6 +33,11 @@ void cEnemy::update(double deltaTime)
 	this->setSpritePos({ currentSpritePos.x, currentSpritePos.y });
 	cout << "Enemy position - x: " << this->getSpritePos().x << " y: " << this->getSpritePos().y << " deltaTime: " << deltaTime << endl;
 	this->setBoundingRect(this->getSpritePos());
+
+	//Makes enemy shoot at random times
+	
+
+
 }
 /*
 =================================================================

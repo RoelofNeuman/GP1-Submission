@@ -8,6 +8,7 @@
 #include "cTextureMgr.h"
 #include "cTexture.h"
 #include "cEnemy.h"
+#include "cEnemy2.h"
 #include "cBullet.h"
 #include "cEnemyBullet.h"
 #include "cRocket.h"

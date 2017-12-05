@@ -93,16 +93,29 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 	// Create vector array of textures
 
-	for (int enemy = 0; enemy < 6; enemy++)
+	for (int enemy = 0; enemy < 8; enemy++)
 	{
 		theEnemies.push_back(new cEnemy);
-		theEnemies[enemy]->setSpritePos({ 100 * (rand() % 5 + 2), 100});
-		theEnemies[enemy]->setSpriteTranslation({ (75, 55) });
+		theEnemies[enemy]->setSpritePos({100 * enemy, 100});
+		theEnemies[enemy]->setSpriteTranslation({ (0, 100) });
 		int randEnemy = rand() % 4;
 		theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
 		theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
-		theEnemies[enemy]->setEnemyVelocity({ 25, 25 });
+		theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
 		theEnemies[enemy]->setActive(true);
+	}
+	
+
+	for (int enemy2 = 0; enemy2 < 8; enemy2++)
+	{
+		theEnemies2.push_back(new cEnemy2);
+		theEnemies2[enemy2]->setSpritePos({ 100 * enemy2, 300 });
+		theEnemies2[enemy2]->setSpriteTranslation({ (0, 100) });
+		
+		theEnemies2[enemy2]->setTexture(theTextureMgr->getTexture(textureName[1]));
+		theEnemies2[enemy2]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
+		theEnemies2[enemy2]->setEnemy2Velocity({ 0, 0 });
+		theEnemies2[enemy2]->setActive(true);
 	}
 
 }
@@ -131,6 +144,13 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	{
 		theEnemies[draw]->render(theRenderer, &theEnemies[draw]->getSpriteDimensions(), &theEnemies[draw]->getSpritePos(), theEnemies[draw]->getSpriteRotAngle(), &theEnemies[draw]->getSpriteCentre(), theEnemies[draw]->getSpriteScale());
 	}
+
+	for (int draw = 0; draw < theEnemies2.size(); draw++)
+	{
+		theEnemies2[draw]->render(theRenderer, &theEnemies2[draw]->getSpriteDimensions(), &theEnemies2[draw]->getSpritePos(), theEnemies2[draw]->getSpriteRotAngle(), &theEnemies2[draw]->getSpriteCentre(), theEnemies[draw]->getSpriteScale());
+	}
+
+
 	// Render each bullet in the vector array
 	for (int draw = 0; draw < theBullets.size(); draw++)
 	{
@@ -142,6 +162,9 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	{
 		theEnemyBullets[draw]->render(theRenderer, &theEnemyBullets[draw]->getSpriteDimensions(), &theEnemyBullets[draw]->getSpritePos(), theEnemyBullets[draw]->getSpriteRotAngle(), &theEnemyBullets[draw]->getSpriteCentre(), theEnemyBullets[draw]->getSpriteScale());
 	}
+	
+
+	
 
 	// Render the Title
 	cTexture* tempTextTexture = theTextureMgr->getTexture("Title");
@@ -210,6 +233,41 @@ void cGame::update(double deltaTime)
 			++bulletIterartor;
 		}
 	}
+
+	// Update the visibility and position of each bullet
+	vector<cEnemyBullet*>::iterator enemyBulletIterartor = theEnemyBullets.begin();
+	while (enemyBulletIterartor != theEnemyBullets.end())
+	{
+		if ((*enemyBulletIterartor)->isActive() == false)
+		{
+			enemyBulletIterartor = theEnemyBullets.erase(enemyBulletIterartor);
+		}
+		else
+		{
+			(*enemyBulletIterartor)->update(deltaTime);
+			++enemyBulletIterartor;
+		}
+	} 
+
+	//attemt at enemies shooting
+/*	for (int shoot = theEnemies.size; shoot = 0; shoot--);
+	{
+		theEnemyBullets.push_back(new cEnemyBullet);
+		int numEnemyBullets = theEnemyBullets.size() - 1;
+		theEnemyBullets[numEnemyBullets]->setSpritePos({ 20,20 });
+		theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ 75, 75 });
+		theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture("nemesisPellet"));
+		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture("nemesisPellet")->getTWidth(), theTextureMgr->getTexture("nemesisPellet")->getTHeight());
+		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ 75, 75 });
+
+		theEnemyBullets[numEnemyBullets]->setActive(true);
+		cout << "step one is doen dde";
+	}
+	*/
+
+
+
+
 	/*
 	==============================================================
 	| Check for collisions
@@ -238,6 +296,32 @@ void cGame::update(double deltaTime)
 				scoreChanged = true;
 
 				(*enemyIterator)->setActive(false);
+				(*bulletIterartor)->setActive(false);
+				theSoundMgr->getSnd("explosion")->play(0);
+			}
+		}
+
+
+		for (vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin(); enemy2Iterator != theEnemies2.end(); ++enemy2Iterator)
+		{
+			if ((*enemy2Iterator)->collidedWith(&(*enemy2Iterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
+			{
+				// if a collision set the bullet and enemies to false
+
+
+				score += 10;
+				if (theTextureMgr->getTexture("Points") != NULL)
+				{
+					theTextureMgr->deleteTexture("Points");
+				}
+
+
+				string thescore = to_string(score);
+				ScoreAsString = "score: " + thescore;
+
+				scoreChanged = true;
+
+				(*enemy2Iterator)->setActive(false);
 				(*bulletIterartor)->setActive(false);
 				theSoundMgr->getSnd("explosion")->play(0);
 			}
@@ -298,7 +382,7 @@ bool cGame::getInput(bool theLoop)
 					break;
 				case SDLK_DOWN:
 				{
-					if (theRocket.getSpritePos().y < (renderWidth - theRocket.getSpritePos().w))
+					if (theRocket.getSpritePos().y < (renderHeight - theRocket.getSpritePos().h))
 					{
 						theRocket.setRocketVelocity({ 0, 350 });
 					}
@@ -315,13 +399,19 @@ bool cGame::getInput(bool theLoop)
 				break;
 				case SDLK_RIGHT:
 				{
-					theRocket.setRocketVelocity({ 250, 0 });
+					if (theRocket.getSpritePos().x < (renderWidth - theRocket.getSpritePos().w))
+					{
+						theRocket.setRocketVelocity({ 350, 0 });
+					}
 				}
 				break;
 
 				case SDLK_LEFT:
 				{
-					theRocket.setRocketVelocity({ -250, 0 });
+					if (theRocket.getSpritePos().x > 0)
+					{
+						theRocket.setRocketVelocity({ -350, 0 });
+					}
 				}
 				break;
 				case SDLK_SPACE:
