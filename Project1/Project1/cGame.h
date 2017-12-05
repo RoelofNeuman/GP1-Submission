@@ -43,14 +43,14 @@ private:
 	// Sprites for displaying background and rocket textures
 	cSprite spriteBkgd;
 	cRocket theRocket;
-	cAsteroid theAsteroid;
+	cEnemy theEnemy;
 	cBullet theBullet;
 	cEnemyBullet theEnemyBullet;
 	// game related variables
 	vector<LPCSTR> textureName;
 	vector<LPCSTR> textName;
 	vector<LPCSTR> texturesToUse;
-	vector<cAsteroid*> theAsteroids;
+	vector<cEnemy*> theEnemies;
 	vector<cBullet*> theBullets;
 	vector<cEnemyBullet*> theEnemyBullets;
 	// Fonts to use
