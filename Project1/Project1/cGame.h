@@ -1,4 +1,4 @@
-#ifndef _GAME_H
+ #ifndef _GAME_H
 #define _GAME_H
 
 /*
@@ -31,6 +31,8 @@ public:
 	double getElapsedSeconds();
 
 	static cGame* getInstance();
+
+	void fireEnemyBullet(int enemyvariable);
 
 private:
 
@@ -69,6 +71,9 @@ private:
 	int score;
 	string ScoreAsString;
 	bool scoreChanged;
+
+	int variableEnemy;
+	
 };
 
 #endif

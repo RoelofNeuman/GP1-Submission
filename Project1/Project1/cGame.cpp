@@ -34,6 +34,22 @@ cGame* cGame::getInstance()
 	return cGame::pInstance;
 }
 
+void cGame::fireEnemyBullet(int enemyvariable)
+{
+	{
+		theEnemyBullets.push_back(new cEnemyBullet);
+		int numEnemyBullets = theEnemyBullets.size() - 1;
+		theEnemyBullets[numEnemyBullets]->setSpritePos({ theEnemies2[enemyvariable]->getSpritePos().x, theEnemies2[enemyvariable]->getSpritePos().y });
+		theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ -75, -75 });
+		theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture(textureName[3]));
+		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
+		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -75, -75 });
+
+		theEnemyBullets[numEnemyBullets]->setActive(true);
+		cout << "step one is done dude";
+
+	}
+}
 
 void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 {
@@ -97,13 +113,14 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	{
 		theEnemies.push_back(new cEnemy);
 		theEnemies[enemy]->setSpritePos({100 * enemy, 100});
-		theEnemies[enemy]->setSpriteTranslation({ (0, 100) });
+		theEnemies[enemy]->setSpriteTranslation({ (0, 50) });
 		int randEnemy = rand() % 4;
 		theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
 		theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
 		theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
 		theEnemies[enemy]->setActive(true);
 		
+		//fireEnemyBullet(enemy);
 	}
 	
 
@@ -112,28 +129,19 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		theEnemies2.push_back(new cEnemy2);
 		theEnemies2[enemy2]->setSpritePos({ 100 * enemy2, 300 });
 		theEnemies2[enemy2]->setSpriteTranslation({ (0, 100) });
-		
+
 		theEnemies2[enemy2]->setTexture(theTextureMgr->getTexture(textureName[1]));
 		theEnemies2[enemy2]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
 		theEnemies2[enemy2]->setEnemy2Velocity({ 0, 0 });
 		theEnemies2[enemy2]->setActive(true);
 
-		
-		
-			theEnemyBullets.push_back(new cEnemyBullet);
-			int numEnemyBullets = theEnemyBullets.size() - 1;
-			theEnemyBullets[numEnemyBullets]->setSpritePos({theEnemies2[enemy2]->getSpritePos().x, theEnemies2[enemy2]->getSpritePos().y });
-			theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ -75, -75 });
-			theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture(textureName[3]));
-			theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
-			theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -75, -75 });
-
-			theEnemyBullets[numEnemyBullets]->setActive(true);
-			cout << "step one is done dude";
-		
+		fireEnemyBullet(enemy2);
 	}
-
+			
+		
 }
+
+
 
 void cGame::run(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 {
@@ -281,7 +289,6 @@ void cGame::update(double deltaTime)
 		}
 	} 
 
-	//attemt at enemies shooting
 	
 	
 	
@@ -332,7 +339,7 @@ void cGame::update(double deltaTime)
 				// if a collision set the bullet and enemies to false
 
 
-				score += 10;
+				score += 5;
 				if (theTextureMgr->getTexture("Points") != NULL)
 				{
 					theTextureMgr->deleteTexture("Points");
