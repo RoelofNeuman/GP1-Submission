@@ -103,6 +103,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
 		theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
 		theEnemies[enemy]->setActive(true);
+		
 	}
 	
 
@@ -116,6 +117,20 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		theEnemies2[enemy2]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
 		theEnemies2[enemy2]->setEnemy2Velocity({ 0, 0 });
 		theEnemies2[enemy2]->setActive(true);
+
+		
+		
+			theEnemyBullets.push_back(new cEnemyBullet);
+			int numEnemyBullets = theEnemyBullets.size() - 1;
+			theEnemyBullets[numEnemyBullets]->setSpritePos({theEnemies2[enemy2]->getSpritePos().x, theEnemies2[enemy2]->getSpritePos().y });
+			theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ -75, -75 });
+			theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture(textureName[3]));
+			theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
+			theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -75, -75 });
+
+			theEnemyBullets[numEnemyBullets]->setActive(true);
+			cout << "step one is done dude";
+		
 	}
 
 }
@@ -219,6 +234,23 @@ void cGame::update(double deltaTime)
 			++enemyIterator;
 		}
 	}
+
+	// Update the visibility and position of each asteriod
+	vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin();
+	while (enemy2Iterator != theEnemies2.end())
+	{
+		if ((*enemy2Iterator)->isActive() == false)
+		{
+			enemy2Iterator = theEnemies2.erase(enemy2Iterator);
+		}
+		else
+		{
+			(*enemy2Iterator)->update(deltaTime);
+			++enemy2Iterator;
+		}
+	}
+
+
 	// Update the visibility and position of each bullet
 	vector<cBullet*>::iterator bulletIterartor = theBullets.begin();
 	while (bulletIterartor != theBullets.end())
@@ -234,7 +266,7 @@ void cGame::update(double deltaTime)
 		}
 	}
 
-	// Update the visibility and position of each bullet
+	// Update the visibility and position of each Enemybullet
 	vector<cEnemyBullet*>::iterator enemyBulletIterartor = theEnemyBullets.begin();
 	while (enemyBulletIterartor != theEnemyBullets.end())
 	{
@@ -250,20 +282,11 @@ void cGame::update(double deltaTime)
 	} 
 
 	//attemt at enemies shooting
-/*	for (int shoot = theEnemies.size; shoot = 0; shoot--);
-	{
-		theEnemyBullets.push_back(new cEnemyBullet);
-		int numEnemyBullets = theEnemyBullets.size() - 1;
-		theEnemyBullets[numEnemyBullets]->setSpritePos({ 20,20 });
-		theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ 75, 75 });
-		theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture("nemesisPellet"));
-		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture("nemesisPellet")->getTWidth(), theTextureMgr->getTexture("nemesisPellet")->getTHeight());
-		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ 75, 75 });
-
-		theEnemyBullets[numEnemyBullets]->setActive(true);
-		cout << "step one is doen dde";
-	}
-	*/
+	
+	
+	
+	
+	
 
 
 
