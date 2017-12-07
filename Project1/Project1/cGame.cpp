@@ -122,10 +122,10 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 	// Create vector array of textures
 
-	for (int enemy = 0; enemy < 6; enemy++)
+	for (int enemy = 0; enemy < 10; enemy++)
 	{
 		theEnemies.push_back(new cEnemy);
-		theEnemies[enemy]->setSpritePos({100 * enemy, 100});
+		theEnemies[enemy]->setSpritePos({100 * enemy, 150});
 		theEnemies[enemy]->setSpriteTranslation({ 100, 0 });
 		 
 		theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
@@ -140,7 +140,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	for (int enemy2 = 0; enemy2 < 6; enemy2++)
 	{
 		theEnemies2.push_back(new cEnemy2);
-		theEnemies2[enemy2]->setSpritePos({ 100 * enemy2, 300 });
+		theEnemies2[enemy2]->setSpritePos({ 100 * enemy2, 50 });
 		theEnemies2[enemy2]->setSpriteTranslation({ 0, 100 });
 
 		theEnemies2[enemy2]->setTexture(theTextureMgr->getTexture(textureName[1]));
@@ -303,16 +303,71 @@ void cGame::update(double deltaTime)
 	} 
 
 	
-
+	//checks if the rocket is directly in front of enemy 1 and then fires
 	for (int firecheck = 0; firecheck < theEnemies.size(); ++firecheck)
 	{
-		if (theRocket.getSpritePos().x -10 <= theEnemies[firecheck]->getSpritePos().x >= theRocket.getSpritePos().x + 10)
+		if (theRocket.getSpritePos().x == theEnemies[firecheck]->getSpritePos().x)
 		{
+			if (theEnemies[firecheck] != NULL)
+			{
 			fireEnemyBullet1(firecheck);
+			}
+		}
+	}
+	//checks if the rocket is in front enemy2 and then fires
+	
+	for (int firecheck = 0; firecheck < theEnemies2.size(); ++firecheck)
+	{
+		if (theEnemies2[firecheck] != NULL)
+		{
+			if (theRocket.getSpritePos().x == theEnemies2[firecheck]->getSpritePos().x)
+			{
+				fireEnemyBullet2(firecheck);
+			}
 		}
 	}
 	
+	//checks if enemy 2 is too low and if so gets rid of them to save power
+	for (int tooLow = 0; tooLow < theEnemies2.size(); ++tooLow)
+	{
+		if (theEnemies2[tooLow]->getSpritePos().y >= (renderHeight - 80))
+		{
+			theEnemies2[tooLow]->setActive(false);
+
+
+		}
+	}
+
+	if (theEnemies.size() == 0)
+	{
+		for (int enemy = 0; enemy < 10; enemy++)
+		{
+			theEnemies.push_back(new cEnemy);
+			theEnemies[enemy]->setSpritePos({ 100 * enemy, 150 });
+			theEnemies[enemy]->setSpriteTranslation({ 100, 0 });
+
+			theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
+			theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
+			theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
+			theEnemies[enemy]->setActive(true);
+		}
+	}
+
+	if (theEnemies2.size() == 0)
+	{
 		
+		for (int enemy = 0; enemy < 6; enemy++)
+		{
+			theEnemies2.push_back(new cEnemy2);
+			theEnemies2[enemy]->setSpritePos({ 100 * enemy, 50 });
+			theEnemies2[enemy]->setSpriteTranslation({ 0, 100 });
+
+			theEnemies2[enemy]->setTexture(theTextureMgr->getTexture(textureName[1]));
+			theEnemies2[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
+			theEnemies2[enemy]->setEnemy2Velocity({ 0, 0 });
+			theEnemies2[enemy]->setActive(true);
+		}
+	}
 	
 
 
@@ -373,7 +428,10 @@ void cGame::update(double deltaTime)
 				scoreChanged = true;
 
 				(*enemy2Iterator)->setActive(false);
-				(*bulletIterartor)->setActive(false);
+				if ((*bulletIterartor) != NULL)
+				{
+					(*bulletIterartor)->setActive(false);
+				}
 				theSoundMgr->getSnd("explosion")->play(0);
 			}
 		}
