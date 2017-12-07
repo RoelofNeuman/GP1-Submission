@@ -16,12 +16,15 @@ Defualt Constructor
 cEnemy::cEnemy() : cSprite()
 {
 	this->enemyVelocity = { 0, 0 };
+	
 }
 /*
 =================================================================
 Update the sprite position
 =================================================================
 */
+
+
 
 void cEnemy::update(double deltaTime)
 {
@@ -31,13 +34,22 @@ void cEnemy::update(double deltaTime)
 	currentSpritePos.y += this->getSpriteTranslation().y * 25 * deltaTime;
 
 	this->setSpritePos({ currentSpritePos.x, currentSpritePos.y });
-	cout << "Enemy position - x: " << this->getSpritePos().x << " y: " << this->getSpritePos().y << " deltaTime: " << deltaTime << endl;
 	this->setBoundingRect(this->getSpritePos());
 
 	//Makes enemy shoot at random times
 	
+	if (currentSpritePos.x == 0)
+	{
+		this->setSpriteTranslation({100, 0});
+	}
+	
+	if (currentSpritePos.x == 1000)
+	{
+		this->setSpriteTranslation({ -100,0 });
+	}
 
 
+	
 }
 /*
 =================================================================

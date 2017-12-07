@@ -32,7 +32,9 @@ public:
 
 	static cGame* getInstance();
 
-	void fireEnemyBullet(int enemyvariable);
+	void fireEnemyBullet1(int enemyvariable);
+
+	void fireEnemyBullet2(int enemyvariable);
 
 private:
 

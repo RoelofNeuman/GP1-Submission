@@ -31,13 +31,10 @@ void cEnemy2::update(double deltaTime)
 	currentSpritePos.y += this->getSpriteTranslation().y * deltaTime;
 
 	this->setSpritePos({ currentSpritePos.x, currentSpritePos.y });
-	cout << "Enemy position - x: " << this->getSpritePos().x << " y: " << this->getSpritePos().y << " deltaTime: " << deltaTime << endl;
 	this->setBoundingRect(this->getSpritePos());
 
-	//Makes enemy shoot at random times
 
-
-
+	
 }
 /*
 =================================================================

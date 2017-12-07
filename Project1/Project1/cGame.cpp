@@ -34,21 +34,34 @@ cGame* cGame::getInstance()
 	return cGame::pInstance;
 }
 
-void cGame::fireEnemyBullet(int enemyvariable)
+void cGame::fireEnemyBullet1(int enemyvariable)
 {
-	{
+	
+		theEnemyBullets.push_back(new cEnemyBullet);
+		int numEnemyBullets = theEnemyBullets.size() - 1;
+		theEnemyBullets[numEnemyBullets]->setSpritePos({ theEnemies[enemyvariable]->getSpritePos().x, theEnemies[enemyvariable]->getSpritePos().y });
+		theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ -25, -25 });
+		theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture(textureName[3]));
+		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
+		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -25, -25 });
+
+		theEnemyBullets[numEnemyBullets]->setActive(true);
+	
+}
+
+void cGame::fireEnemyBullet2(int enemyvariable)
+{
+	
 		theEnemyBullets.push_back(new cEnemyBullet);
 		int numEnemyBullets = theEnemyBullets.size() - 1;
 		theEnemyBullets[numEnemyBullets]->setSpritePos({ theEnemies2[enemyvariable]->getSpritePos().x, theEnemies2[enemyvariable]->getSpritePos().y });
-		theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ -75, -75 });
+		theEnemyBullets[numEnemyBullets]->setSpriteTranslation({ -25, -25 });
 		theEnemyBullets[numEnemyBullets]->setTexture(theTextureMgr->getTexture(textureName[3]));
 		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
-		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -75, -75 });
+		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -25, -25 });
 
 		theEnemyBullets[numEnemyBullets]->setActive(true);
-		cout << "step one is done dude";
 
-	}
 }
 
 void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
@@ -68,7 +81,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 	// Store the textures
 	textureName = { "enemy1", "enemy2", "bullet player", "nemesisPellet", "theRocket","theBackground"};
-	texturesToUse = { "Images\\enemy1.png", "Images\\enemy2.png","Images\\bullet player.png", "Images\\nemesisPellet.png", "Images\\rocketSprite.png", "Images\\starscape1024x768.png"};
+	texturesToUse = { "Images\\enemy1.png", "Images\\enemy2.png","Images\\bullet player.png", "Images\\nemesisPellet.png", "Images\\rocketSprite.png", "Images\\background.jpg"};
 	for (int tCount = 0; tCount < textureName.size(); tCount++)
 	{	
 		theTextureMgr->addTexture(textureName[tCount], texturesToUse[tCount]);
@@ -109,33 +122,33 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 	// Create vector array of textures
 
-	for (int enemy = 0; enemy < 8; enemy++)
+	for (int enemy = 0; enemy < 6; enemy++)
 	{
 		theEnemies.push_back(new cEnemy);
 		theEnemies[enemy]->setSpritePos({100 * enemy, 100});
-		theEnemies[enemy]->setSpriteTranslation({ (0, 50) });
-		int randEnemy = rand() % 4;
+		theEnemies[enemy]->setSpriteTranslation({ 100, 0 });
+		 
 		theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
 		theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
 		theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
 		theEnemies[enemy]->setActive(true);
 		
-		//fireEnemyBullet(enemy);
+		fireEnemyBullet1(enemy);
 	}
 	
 
-	for (int enemy2 = 0; enemy2 < 8; enemy2++)
+	for (int enemy2 = 0; enemy2 < 6; enemy2++)
 	{
 		theEnemies2.push_back(new cEnemy2);
 		theEnemies2[enemy2]->setSpritePos({ 100 * enemy2, 300 });
-		theEnemies2[enemy2]->setSpriteTranslation({ (0, 100) });
+		theEnemies2[enemy2]->setSpriteTranslation({ 0, 100 });
 
 		theEnemies2[enemy2]->setTexture(theTextureMgr->getTexture(textureName[1]));
 		theEnemies2[enemy2]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
 		theEnemies2[enemy2]->setEnemy2Velocity({ 0, 0 });
 		theEnemies2[enemy2]->setActive(true);
 
-		fireEnemyBullet(enemy2);
+		fireEnemyBullet2(enemy2);
 	}
 			
 		
@@ -290,10 +303,18 @@ void cGame::update(double deltaTime)
 	} 
 
 	
+
+	for (int firecheck = 0; firecheck < theEnemies.size(); ++firecheck)
+	{
+		if (theRocket.getSpritePos().x -10 <= theEnemies[firecheck]->getSpritePos().x >= theRocket.getSpritePos().x + 10)
+		{
+			fireEnemyBullet1(firecheck);
+		}
+	}
 	
+		
 	
-	
-	
+
 
 
 

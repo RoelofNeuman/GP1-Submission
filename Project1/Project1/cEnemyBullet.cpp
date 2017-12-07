@@ -40,7 +40,7 @@ void cEnemyBullet::update(double deltaTime)
 
 	this->setSpritePos({ currentSpritePos.x, currentSpritePos.y });
 
-	cout << "Enemy bullet position - x: " << this->getSpritePos().x << " y: " << this->getSpritePos().y << " deltaTime: " << deltaTime << endl;
+	//cout << "Enemy bullet position - x: " << this->getSpritePos().x << " y: " << this->getSpritePos().y << " deltaTime: " << deltaTime << endl;
 
 	this->setBoundingRect(this->getSpritePos());
 
