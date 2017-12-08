@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -136,6 +136,8 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="asteroidsGame.h" />
+    <ClInclude Include="cButton.h" />
+    <ClInclude Include="cButtonMgr.h" />
     <ClInclude Include="cEnemy.h" />
     <ClInclude Include="cBkGround.h" />
     <ClInclude Include="cBullet.h" />
@@ -155,6 +157,8 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidsSDL.cpp" />
+    <ClCompile Include="cButton.cpp" />
+    <ClCompile Include="cButtonMgr.cpp" />
     <ClCompile Include="cEnemy.cpp" />
     <ClCompile Include="cBkGround.cpp" />
     <ClCompile Include="cBullet.cpp" />

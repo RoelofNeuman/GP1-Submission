@@ -38,14 +38,14 @@ void cEnemy::update(double deltaTime)
 
 	//Makes enemy shoot at random times
 	
-	if (currentSpritePos.x == 0)
+	if (currentSpritePos.x <= 0)
 	{
 		this->setSpriteTranslation({100, 0});
 	}
 	
-	if (currentSpritePos.x == 1000)
+	if (currentSpritePos.x >= 1000)
 	{
-		this->setSpriteTranslation({ -100,0 });
+		this->setSpriteTranslation({ -200,0 });
 	}
 
 

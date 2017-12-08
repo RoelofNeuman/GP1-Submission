@@ -67,9 +67,34 @@ private:
 	vector<LPCSTR> soundList;
 	vector<soundType> soundTypes;
 	vector<LPCSTR> soundsToUse;
+	
+	//menu and button things
+	vector<LPCSTR> btnNameList; //menu
+	vector<LPCSTR> btnTexturesToUse;
+	vector<SDL_Point> btnPos;
+	vector<cButton> theButtons;
+	bool loop;
+
+	SDL_Rect pos;
+	FPoint scale;
+
+	
+	
+	
 	// Game objects
 	// Define the elements and there position in/on the array/map
 	int renderWidth, renderHeight;
+	
+	
+	gameState theGameState;// lab 10
+	btnTypes theBtnType;//
+	cTexture* tempTexture;//
+	SDL_Point theAreaClicked;//
+
+	SDL_Point theTileClicked; //
+	SDL_Point mapTileClicked;//
+	SDL_Point aRect;// lab10
+	
 	int score;
 	string ScoreAsString;
 	bool scoreChanged;
