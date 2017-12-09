@@ -198,7 +198,7 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	spriteBkgd.render(theRenderer, NULL, NULL, spriteBkgd.getSpriteScale());
 	
 
-	SDL_RenderClear(theRenderer);
+	//SDL_RenderClear(theRenderer);
 	switch (theGameState)
 	{
 	case MENU:
@@ -326,17 +326,16 @@ void cGame::update()
 void cGame::update(double deltaTime)
 {
 
-	//Check Button cliked and changed state
 	if (theGameState == MENU || theGameState == END)
 	{
 		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, QUIT, theAreaClicked);
-		theGameState = thebuttonMgr->getBtn("play_btn")->update(theGameState, PLAYING, theAreaClicked);
 	}
 	else
 	{
 		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, END, theAreaClicked);
 	}
-	
+
+	theGameState = thebuttonMgr->getBtn("play_btn")->update(theGameState, PLAYING, theAreaClicked);
 	theGameState = thebuttonMgr->getBtn("menu_btn")->update(theGameState, MENU, theAreaClicked);
 
 
@@ -440,7 +439,7 @@ void cGame::update(double deltaTime)
 
 	if (theEnemies.size() == 0)
 	{
-		for (int enemy = 0; enemy < 10; enemy++)
+		for (int enemy = 0; enemy < 9; enemy++)
 		{
 			theEnemies.push_back(new cEnemy);
 			theEnemies[enemy]->setSpritePos({ 100 * enemy, 150 });
@@ -456,7 +455,7 @@ void cGame::update(double deltaTime)
 	if (theEnemies2.size() == 0)
 	{
 		
-		for (int enemy = 0; enemy < 6; enemy++)
+		for (int enemy = 0; enemy < 5; enemy++)
 		{
 			theEnemies2.push_back(new cEnemy2);
 			theEnemies2[enemy]->setSpritePos({ 100 * enemy, 50 });
@@ -487,22 +486,29 @@ void cGame::update(double deltaTime)
 			if ((*enemyIterator)->collidedWith(&(*enemyIterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
 			{
 				// if a collision set the bullet and enemies to false
-				
-				
+
+
 				score += 10;
-				if (theTextureMgr->getTexture ("Points") != NULL)
+				if (theTextureMgr->getTexture("Points") != NULL)
 				{
 					theTextureMgr->deleteTexture("Points");
 				}
-				
+
 
 				string thescore = to_string(score);
 				ScoreAsString = "score: " + thescore;
 
 				scoreChanged = true;
+				if ((*enemyIterator) != NULL)
+				{
+					(*enemyIterator)->setActive(false);
+				}
 
-				(*enemyIterator)->setActive(false);
-				(*bulletIterartor)->setActive(false);
+				if ((*bulletIterartor) != NULL)
+				{
+					(*bulletIterartor)->setActive(false);
+				}
+
 				theSoundMgr->getSnd("explosion")->play(0);
 			}
 		}
@@ -527,7 +533,12 @@ void cGame::update(double deltaTime)
 
 				scoreChanged = true;
 
-				(*enemy2Iterator)->setActive(false);
+				if ((*enemy2Iterator) != NULL)
+				{
+					(*enemy2Iterator)->setActive(false);
+				}
+				
+				
 				if ((*bulletIterartor) != NULL)
 				{
 					(*bulletIterartor)->setActive(false);
@@ -535,8 +546,23 @@ void cGame::update(double deltaTime)
 				theSoundMgr->getSnd("explosion")->play(0);
 			}
 		}
-	}
 
+		
+	}
+	
+	//for (vector<cEnemyBullet*>::iterator EnemyBulletIterartor = theEnemyBullets.begin(); enemyBulletIterartor != theEnemyBullets.end(); ++EnemyBulletIterartor)
+	//{
+	//	if (theRocket.collidedWith(&theRocket.getBoundingRect(), &(*enemyBulletIterartor)->getBoundingRect()))
+	//	{
+	//	 //if a collision set the bullet and enemies to false
+
+	//		(*enemyBulletIterartor)->setActive(false);
+
+	//	}
+
+	//}
+	//	
+	
 
 	// Update the Rockets position
 	theRocket.update(deltaTime);
