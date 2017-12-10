@@ -141,6 +141,7 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
     <ClInclude Include="cEnemy.h" />
     <ClInclude Include="cBkGround.h" />
     <ClInclude Include="cBullet.h" />
+    <ClInclude Include="cFileHandler.h" />
     <ClInclude Include="cFont.h" />
     <ClInclude Include="cFontMgr.h" />
     <ClInclude Include="cGame.h" />
@@ -151,6 +152,7 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
     <ClInclude Include="cSprite.h" />
     <ClInclude Include="cTexture.h" />
     <ClInclude Include="cTextureMgr.h" />
+    <ClInclude Include="cTileMap.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="cEnemyBullet.h" />
     <ClInclude Include="cEnemy2.h" />
@@ -164,6 +166,7 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
     <ClCompile Include="cBullet.cpp" />
     <ClCompile Include="cEnemy2.cpp" />
     <ClCompile Include="cEnemyBullet.cpp" />
+    <ClCompile Include="cFileHandler.cpp" />
     <ClCompile Include="cFont.cpp" />
     <ClCompile Include="cFontMgr.cpp" />
     <ClCompile Include="cGame.cpp" />
@@ -174,6 +177,7 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
     <ClCompile Include="cSprite.cpp" />
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="cTextureMgr.cpp" />
+    <ClCompile Include="cTileMap.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

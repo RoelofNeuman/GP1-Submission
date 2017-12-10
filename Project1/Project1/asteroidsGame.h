@@ -16,5 +16,7 @@
 #include "cSoundMgr.h"
 #include "cButton.h"
 #include "cButtonMgr.h"
+#include "cFileHandler.h"
+#include "cTileMap.h"
 
 #endif

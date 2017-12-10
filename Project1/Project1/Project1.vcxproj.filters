@@ -66,6 +66,18 @@
     <ClInclude Include="cEnemy2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cButtonMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cFileHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cTileMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsteroidsSDL.cpp">
@@ -114,6 +126,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cEnemy2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cButtonMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cTileMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

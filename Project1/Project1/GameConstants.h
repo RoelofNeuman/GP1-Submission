@@ -18,6 +18,9 @@
 // Maths functions
 #include <math.h>
 #define PI 3.14159265
+// File handling
+#include <fstream>
+#include <sstream>
 
 // STL Container & Algorithms
 #include <vector>
@@ -29,7 +32,7 @@ using namespace std::chrono;
 using namespace std;
 
 //Define the string to appear in the top left corner of the window
-#define WINDOW_TITLE "Asteroids!! - The Game"
+#define WINDOW_TITLE "Bullet Purgatory_ GP1 Coursework by Roelof Neuman"
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
@@ -42,6 +45,6 @@ typedef struct
 
 enum textType {SOLID, BLENDED, SHADED};
 enum soundType {SFX, MUSIC};
-enum gameState {MENU, INSTRUCTIONS, CREATEMAZE, PLAYING, END, QUIT};
+enum gameState {MENU, INSTRUCTIONS, LOADMAP, SAVEMAP, PLAYING, END, QUIT};
 enum btnTypes {EXIT, INSTRUCT, LOAD, PLAY, SAVE, Settings};
 #endif

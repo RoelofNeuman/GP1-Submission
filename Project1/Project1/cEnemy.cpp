@@ -36,7 +36,7 @@ void cEnemy::update(double deltaTime)
 	this->setSpritePos({ currentSpritePos.x, currentSpritePos.y });
 	this->setBoundingRect(this->getSpritePos());
 
-	//Makes enemy shoot at random times
+	
 	
 	if (currentSpritePos.x <= 0)
 	{

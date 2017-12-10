@@ -43,6 +43,7 @@ private:
 	time_point< high_resolution_clock > m_lastTime;
 	time_point< high_resolution_clock > m_CurrentTime;
 	duration< double > deltaTime;
+	bool loop;
 
 	// Sprites for displaying background and rocket textures
 	cSprite spriteBkgd;
@@ -73,7 +74,7 @@ private:
 	vector<LPCSTR> btnTexturesToUse;
 	vector<SDL_Point> btnPos;
 	vector<cButton> theButtons;
-	bool loop;
+	
 
 	SDL_Rect pos;
 	FPoint scale;
@@ -94,12 +95,17 @@ private:
 	SDL_Point theTileClicked; //
 	SDL_Point mapTileClicked;//
 	SDL_Point aRect;// lab10
-	
+
+	bool fileAvailable;
+	cFileHandler theFile;
+	cTileMap theTileMap;
+
+	//score related variables
 	int score;
 	string ScoreAsString;
 	bool scoreChanged;
 
-	int variableEnemy;
+	
 	
 };
 

@@ -80,6 +80,23 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 	score = 0;
 
+
+	// Set filename
+	theFile.setFileName("Data/usermap.dat");
+	// Check file is available
+	if (!theFile.openFile(ios::in)) //open file for input output
+	{
+		cout << "Could not open specified file '" << theFile.getFileName() << "'. Error " << SDL_GetError() << endl;
+		fileAvailable = false;
+	}
+	else
+	{
+		cout << "File '" << theFile.getFileName() << "' opened for input!" << endl;
+		fileAvailable = true;
+	}
+
+	theAreaClicked = { 0, 0 };
+
 	// Store the textures
 	textureName = { "enemy1", "enemy2", "bullet player", "nemesisPellet", "theRocket","theBackground"};
 	texturesToUse = { "Images\\enemy1.png", "Images\\enemy2.png","Images\\bullet player.png", "Images\\nemesisPellet.png", "Images\\rocketSprite.png", "Images\\background.jpg"};
@@ -103,7 +120,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	//store buttons
 	btnNameList = { "exit_btn", "instructions_btn", "load_btn", "menu_btn", "play_btn", "save_btn", "settings_btn" };
 	btnTexturesToUse = {"Images/Buttons/button_exit.png", "Images/Buttons/button_instructions.png", "Images/Buttons/button_load.png", "Images/Buttons/button_menu.png", "Images/Buttons/button_play.png", "Images/Buttons/button_save.png", "Images/Buttons/button_settings.png"};
-	btnPos = { {400, 375}, {400, 300}, {400,300}, {500, 500}, {400,300}, {740, 500}, {400, 300} };
+	btnPos = { {400, 375}, {400, 300}, {400,300}, {50, 375}, {50,300}, {740, 500}, {400, 300} };
 	
 	for (int buttonCount = 0; buttonCount < btnNameList.size(); buttonCount++)
 	{
@@ -210,11 +227,16 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		FPoint scale = { 1, 1 };
 		tempTextTexture->renderTexture(theRenderer, tempTextTexture->getTexture(), &tempTextTexture->getTextureRect(), &pos, scale);
 	
+		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 50, 450 });
 
 		thebuttonMgr->getBtn("play_btn")->render(theRenderer, &thebuttonMgr->getBtn("play_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("play_btn")->getSpritePos(), thebuttonMgr->getBtn("play_btn")->getSpriteScale());
-	
 		thebuttonMgr->getBtn("exit_btn")->render(theRenderer, &thebuttonMgr->getBtn("exit_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("exit_btn")->getSpritePos(), thebuttonMgr->getBtn("exit_btn")->getSpriteScale());
+		thebuttonMgr->getBtn("load_btn")->render(theRenderer, &thebuttonMgr->getBtn("load_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("load_btn")->getSpritePos(), thebuttonMgr->getBtn("load_btn")->getSpriteScale());
+		thebuttonMgr->getBtn("load_btn")->setSpritePos({ 50, 375 });
+	
 	}
+
+
 	break;
 
 
@@ -233,8 +255,7 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 740, 650 });
 		thebuttonMgr->getBtn("exit_btn")->render(theRenderer, &thebuttonMgr->getBtn("exit_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("exit_btn")->getSpritePos(), thebuttonMgr->getBtn("exit_btn")->getSpriteScale());
-		thebuttonMgr->getBtn("load_btn")->setSpritePos({ 740, 500 });
-		thebuttonMgr->getBtn("load_btn")->render(theRenderer, &thebuttonMgr->getBtn("load_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("load_btn")->getSpritePos(), thebuttonMgr->getBtn("load_btn")->getSpriteScale());
+	
 		thebuttonMgr->getBtn("save_btn")->setSpritePos({ 740, 575 });
 		thebuttonMgr->getBtn("save_btn")->render(theRenderer, &thebuttonMgr->getBtn("save_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("save_btn")->getSpritePos(), thebuttonMgr->getBtn("save_btn")->getSpriteScale());
 
@@ -290,6 +311,8 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	{
 		spriteBkgd.render(theRenderer, NULL, NULL, spriteBkgd.getSpriteScale());
 
+		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 400, 375 });
+
 		thebuttonMgr->getBtn("menu_btn")->setSpritePos({ 500, 500 });
 		thebuttonMgr->getBtn("menu_btn")->render(theRenderer, &thebuttonMgr->getBtn("menu_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("menu_btn")->getSpritePos(), thebuttonMgr->getBtn("menu_btn")->getSpriteScale());
 		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 500, 575 });
@@ -325,247 +348,295 @@ void cGame::update()
 
 void cGame::update(double deltaTime)
 {
+	switch (theGameState)
+	{
 
-	if (theGameState == MENU || theGameState == END)
+	case MENU:
 	{
 		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, QUIT, theAreaClicked);
+		theGameState = thebuttonMgr->getBtn("play_btn")->update(theGameState, PLAYING, theAreaClicked);
+		theGameState = thebuttonMgr->getBtn("load_btn")->update(theGameState, LOADMAP, theAreaClicked);
+		if (fileAvailable && theGameState == LOADMAP)
+		{
+			theTileMap.initialiseMapFromFile(&theFile);
+			theGameState = PLAYING;
+			theAreaClicked = { 0, 0 };
+		}
+
 	}
-	else
+	break;
+
+	case PLAYING:
 	{
 		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, END, theAreaClicked);
-	}
 
-	theGameState = thebuttonMgr->getBtn("play_btn")->update(theGameState, PLAYING, theAreaClicked);
-	theGameState = thebuttonMgr->getBtn("menu_btn")->update(theGameState, MENU, theAreaClicked);
-
-
-
-	// Update the visibility and position of each asteriod
-	vector<cEnemy*>::iterator enemyIterator = theEnemies.begin();
-	while (enemyIterator != theEnemies.end())
-	{
-		if ((*enemyIterator)->isActive() == false)
+		theGameState = thebuttonMgr->getBtn("save_btn")->update(theGameState, SAVEMAP, theAreaClicked);
+		if (theGameState == SAVEMAP)
 		{
-			enemyIterator = theEnemies.erase(enemyIterator);
-		}
-		else
-		{
-			(*enemyIterator)->update(deltaTime);
-			++enemyIterator;
-		}
-	}
-
-	// Update the visibility and position of each asteriod
-	vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin();
-	while (enemy2Iterator != theEnemies2.end())
-	{
-		if ((*enemy2Iterator)->isActive() == false)
-		{
-			enemy2Iterator = theEnemies2.erase(enemy2Iterator);
-		}
-		else
-		{
-			(*enemy2Iterator)->update(deltaTime);
-			++enemy2Iterator;
-		}
-	}
-
-
-	// Update the visibility and position of each bullet
-	vector<cBullet*>::iterator bulletIterartor = theBullets.begin();
-	while (bulletIterartor != theBullets.end())
-	{
-		if ((*bulletIterartor)->isActive() == false)
-		{
-			bulletIterartor = theBullets.erase(bulletIterartor);
-		}
-		else
-		{
-			(*bulletIterartor)->update(deltaTime);
-			++bulletIterartor;
-		}
-	}
-
-	// Update the visibility and position of each Enemybullet
-	vector<cEnemyBullet*>::iterator enemyBulletIterartor = theEnemyBullets.begin();
-	while (enemyBulletIterartor != theEnemyBullets.end())
-	{
-		if ((*enemyBulletIterartor)->isActive() == false)
-		{
-			enemyBulletIterartor = theEnemyBullets.erase(enemyBulletIterartor);
-		}
-		else
-		{
-			(*enemyBulletIterartor)->update(deltaTime);
-			++enemyBulletIterartor;
-		}
-	} 
-
-	
-	//checks if the rocket is directly in front of enemy 1 and then fires
-	for (int firecheck = 0; firecheck < theEnemies.size(); ++firecheck)
-	{
-		if (theRocket.getSpritePos().x == theEnemies[firecheck]->getSpritePos().x)
-		{
-			if (theEnemies[firecheck] != NULL)
+			// Check file is available
+			if (!theFile.openFile(ios::out)) //open file for output
 			{
-			fireEnemyBullet1(firecheck);
+				cout << "Could not open specified file '" << theFile.getFileName() << "'. Error " << SDL_GetError() << endl;
+			}
+			else
+			{
+				cout << "File '" << theFile.getFileName() << "' opened for output!" << endl;
+				theTileMap.writeMapDataToFile(&theFile);
+			}
+
+			//theTileMap.writeMapDataToFile(&theFile);
+			theGameState = PLAYING;
+			theAreaClicked = { 0, 0 };
+		}
+
+
+
+		// Update the Rockets position
+		theRocket.update(deltaTime);
+
+		// Update the visibility and position of each asteriod
+		vector<cEnemy*>::iterator enemyIterator = theEnemies.begin();
+		while (enemyIterator != theEnemies.end())
+		{
+			if ((*enemyIterator)->isActive() == false)
+			{
+				enemyIterator = theEnemies.erase(enemyIterator);
+			}
+			else
+			{
+				(*enemyIterator)->update(deltaTime);
+				++enemyIterator;
 			}
 		}
-	}
-	//checks if the rocket is in front enemy2 and then fires
-	
-	for (int firecheck = 0; firecheck < theEnemies2.size(); ++firecheck)
-	{
-		if (theEnemies2[firecheck] != NULL)
+
+		// Update the visibility and position of each asteriod
+		vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin();
+		while (enemy2Iterator != theEnemies2.end())
 		{
-			if (theRocket.getSpritePos().x == theEnemies2[firecheck]->getSpritePos().x)
+			if ((*enemy2Iterator)->isActive() == false)
 			{
-				fireEnemyBullet2(firecheck);
+				enemy2Iterator = theEnemies2.erase(enemy2Iterator);
 			}
-		}
-	}
-	
-	//checks if enemy 2 is too low and if so gets rid of them to save power
-	for (int tooLow = 0; tooLow < theEnemies2.size(); ++tooLow)
-	{
-		if (theEnemies2[tooLow]->getSpritePos().y >= (renderHeight - 80))
-		{
-			theEnemies2[tooLow]->setActive(false);
-
-
-		}
-	}
-
-	if (theEnemies.size() == 0)
-	{
-		for (int enemy = 0; enemy < 9; enemy++)
-		{
-			theEnemies.push_back(new cEnemy);
-			theEnemies[enemy]->setSpritePos({ 100 * enemy, 150 });
-			theEnemies[enemy]->setSpriteTranslation({ 100, 0 });
-
-			theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
-			theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
-			theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
-			theEnemies[enemy]->setActive(true);
-		}
-	}
-
-	if (theEnemies2.size() == 0)
-	{
-		
-		for (int enemy = 0; enemy < 5; enemy++)
-		{
-			theEnemies2.push_back(new cEnemy2);
-			theEnemies2[enemy]->setSpritePos({ 100 * enemy, 50 });
-			theEnemies2[enemy]->setSpriteTranslation({ 0, 100 });
-
-			theEnemies2[enemy]->setTexture(theTextureMgr->getTexture(textureName[1]));
-			theEnemies2[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
-			theEnemies2[enemy]->setEnemy2Velocity({ 0, 0 });
-			theEnemies2[enemy]->setActive(true);
-		}
-	}
-	
-
-
-
-
-
-	/*
-	==============================================================
-	| Check for collisions
-	==============================================================
-	*/
-	for (vector<cBullet*>::iterator bulletIterartor = theBullets.begin(); bulletIterartor != theBullets.end(); ++bulletIterartor)
-	{
-		//(*bulletIterartor)->update(deltaTime);
-		for (vector<cEnemy*>::iterator enemyIterator = theEnemies.begin(); enemyIterator != theEnemies.end(); ++enemyIterator)
-		{
-			if ((*enemyIterator)->collidedWith(&(*enemyIterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
+			else
 			{
-				// if a collision set the bullet and enemies to false
-
-
-				score += 10;
-				if (theTextureMgr->getTexture("Points") != NULL)
-				{
-					theTextureMgr->deleteTexture("Points");
-				}
-
-
-				string thescore = to_string(score);
-				ScoreAsString = "score: " + thescore;
-
-				scoreChanged = true;
-				if ((*enemyIterator) != NULL)
-				{
-					(*enemyIterator)->setActive(false);
-				}
-
-				if ((*bulletIterartor) != NULL)
-				{
-					(*bulletIterartor)->setActive(false);
-				}
-
-				theSoundMgr->getSnd("explosion")->play(0);
+				(*enemy2Iterator)->update(deltaTime);
+				++enemy2Iterator;
 			}
 		}
 
 
-		for (vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin(); enemy2Iterator != theEnemies2.end(); ++enemy2Iterator)
+		// Update the visibility and position of each bullet
+		vector<cBullet*>::iterator bulletIterartor = theBullets.begin();
+		while (bulletIterartor != theBullets.end())
 		{
-			if ((*enemy2Iterator)->collidedWith(&(*enemy2Iterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
+			if ((*bulletIterartor)->isActive() == false)
 			{
-				// if a collision set the bullet and enemies to false
-
-
-				score += 5;
-				if (theTextureMgr->getTexture("Points") != NULL)
-				{
-					theTextureMgr->deleteTexture("Points");
-				}
-
-
-				string thescore = to_string(score);
-				ScoreAsString = "score: " + thescore;
-
-				scoreChanged = true;
-
-				if ((*enemy2Iterator) != NULL)
-				{
-					(*enemy2Iterator)->setActive(false);
-				}
-				
-				
-				if ((*bulletIterartor) != NULL)
-				{
-					(*bulletIterartor)->setActive(false);
-				}
-				theSoundMgr->getSnd("explosion")->play(0);
+				bulletIterartor = theBullets.erase(bulletIterartor);
+			}
+			else
+			{
+				(*bulletIterartor)->update(deltaTime);
+				++bulletIterartor;
 			}
 		}
 
-		
+		// Update the visibility and position of each Enemybullet
+		vector<cEnemyBullet*>::iterator enemyBulletIterartor = theEnemyBullets.begin();
+		while (enemyBulletIterartor != theEnemyBullets.end())
+		{
+			if ((*enemyBulletIterartor)->isActive() == false)
+			{
+				enemyBulletIterartor = theEnemyBullets.erase(enemyBulletIterartor);
+			}
+			else
+			{
+				(*enemyBulletIterartor)->update(deltaTime);
+				++enemyBulletIterartor;
+			}
+		}
+
+
+		//checks if the rocket is directly in front of enemy 1 and then fires
+		for (int firecheck = 0; firecheck < theEnemies.size(); ++firecheck)
+		{
+			if (theRocket.getSpritePos().x == theEnemies[firecheck]->getSpritePos().x)
+			{
+				if (theEnemies[firecheck] != NULL)
+				{
+					fireEnemyBullet1(firecheck);
+				}
+			}
+		}
+		//checks if the rocket is in front enemy2 and then fires
+
+		for (int firecheck = 0; firecheck < theEnemies2.size(); ++firecheck)
+		{
+			if (theEnemies2[firecheck] != NULL)
+			{
+				if (theRocket.getSpritePos().x == theEnemies2[firecheck]->getSpritePos().x)
+				{
+					fireEnemyBullet2(firecheck);
+				}
+			}
+		}
+
+		//checks if enemy 2 is too low and if so gets rid of them to save power
+		for (int tooLow = 0; tooLow < theEnemies2.size(); ++tooLow)
+		{
+			if (theEnemies2[tooLow]->getSpritePos().y >= (renderHeight - 80))
+			{
+				theEnemies2[tooLow]->setActive(false);
+
+
+			}
+		}
+
+		if (theEnemies.size() == 0)
+		{
+			for (int enemy = 0; enemy < 9; enemy++)
+			{
+				theEnemies.push_back(new cEnemy);
+				theEnemies[enemy]->setSpritePos({ 100 * enemy, 150 });
+				theEnemies[enemy]->setSpriteTranslation({ 100, 0 });
+
+				theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
+				theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
+				theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
+				theEnemies[enemy]->setActive(true);
+			}
+		}
+
+		if (theEnemies2.size() == 0)
+		{
+
+			for (int enemy = 0; enemy < 5; enemy++)
+			{
+				theEnemies2.push_back(new cEnemy2);
+				theEnemies2[enemy]->setSpritePos({ 100 * enemy, 50 });
+				theEnemies2[enemy]->setSpriteTranslation({ 0, 100 });
+
+				theEnemies2[enemy]->setTexture(theTextureMgr->getTexture(textureName[1]));
+				theEnemies2[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
+				theEnemies2[enemy]->setEnemy2Velocity({ 0, 0 });
+				theEnemies2[enemy]->setActive(true);
+			}
+		}
+
+
+
+
+
+
+		/*
+		==============================================================
+		| Check for collisions
+		==============================================================
+		*/
+		for (vector<cBullet*>::iterator bulletIterartor = theBullets.begin(); bulletIterartor != theBullets.end(); ++bulletIterartor)
+		{
+			//(*bulletIterartor)->update(deltaTime);
+			for (vector<cEnemy*>::iterator enemyIterator = theEnemies.begin(); enemyIterator != theEnemies.end(); ++enemyIterator)
+			{
+				if ((*enemyIterator)->collidedWith(&(*enemyIterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
+				{
+					// if a collision set the bullet and enemies to false
+
+
+					score += 10;
+					if (theTextureMgr->getTexture("Points") != NULL)
+					{
+						theTextureMgr->deleteTexture("Points");
+					}
+
+
+					string thescore = to_string(score);   
+					ScoreAsString = "score: " + thescore;  
+
+					scoreChanged = true;
+					if ((*enemyIterator) != NULL)
+					{
+						(*enemyIterator)->setActive(false);
+					}
+
+					if ((*bulletIterartor) != NULL)
+					{
+						(*bulletIterartor)->setActive(false);
+					}
+
+					theSoundMgr->getSnd("explosion")->play(0);
+				}
+			}
+
+
+			for (vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin(); enemy2Iterator != theEnemies2.end(); ++enemy2Iterator)
+			{
+				if ((*enemy2Iterator)->collidedWith(&(*enemy2Iterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
+				{
+					// if a collision set the bullet and enemies to false
+
+
+					score += 5;
+					if (theTextureMgr->getTexture("Points") != NULL)
+					{
+						theTextureMgr->deleteTexture("Points");
+					}
+
+
+					string thescore = to_string(score);
+					ScoreAsString = "score: " + thescore;
+
+					scoreChanged = true;
+
+					if ((*enemy2Iterator) != NULL)
+					{
+						(*enemy2Iterator)->setActive(false);
+					}
+
+
+					if ((*bulletIterartor) != NULL)
+					{
+						(*bulletIterartor)->setActive(false);
+					}
+					theSoundMgr->getSnd("explosion")->play(0);
+				}
+
+
+
+
+
+
+
+				for (vector<cEnemyBullet*>::iterator EnemyBulletIterartor = theEnemyBullets.begin(); enemyBulletIterartor != theEnemyBullets.end(); ++EnemyBulletIterartor)
+				{
+					if (theRocket.collidedWith(&theRocket.getBoundingRect(), &(*enemyBulletIterartor)->getBoundingRect()))
+					{
+					 //if a collision set the bullet and enemies to false
+
+						(*enemyBulletIterartor)->setActive(false);
+
+					}
+
+				}
+					
+
+
+			}
+		}
 	}
-	
-	//for (vector<cEnemyBullet*>::iterator EnemyBulletIterartor = theEnemyBullets.begin(); enemyBulletIterartor != theEnemyBullets.end(); ++EnemyBulletIterartor)
-	//{
-	//	if (theRocket.collidedWith(&theRocket.getBoundingRect(), &(*enemyBulletIterartor)->getBoundingRect()))
-	//	{
-	//	 //if a collision set the bullet and enemies to false
-
-	//		(*enemyBulletIterartor)->setActive(false);
-
-	//	}
-
-	//}
-	//	
-	
-
-	// Update the Rockets position
-	theRocket.update(deltaTime);
+		break;
+	case END:
+	{
+		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, QUIT, theAreaClicked);
+		theGameState = thebuttonMgr->getBtn("menu_btn")->update(theGameState, MENU, theAreaClicked);
+	}
+	break;
+	case QUIT:
+	{
+	}
+	break;
+	default:
+	break;
+	}
 }
 
 bool cGame::getInput(bool theLoop)
@@ -620,7 +691,7 @@ bool cGame::getInput(bool theLoop)
 				{
 					if (theRocket.getSpritePos().y < (renderHeight - theRocket.getSpritePos().h))
 					{
-						theRocket.setRocketVelocity({ 0, 350 });
+						theRocket.setRocketVelocity({ 0, 250 });
 					}
 				}
 				break;
@@ -629,7 +700,7 @@ bool cGame::getInput(bool theLoop)
 				{
 					if (theRocket.getSpritePos().y > 0)
 					{
-						theRocket.setRocketVelocity({ 0, -350 });
+						theRocket.setRocketVelocity({ 0, -250 });
 					}
 				}
 				break;
@@ -637,7 +708,7 @@ bool cGame::getInput(bool theLoop)
 				{
 					if (theRocket.getSpritePos().x < (renderWidth - theRocket.getSpritePos().w))
 					{
-						theRocket.setRocketVelocity({ 350, 0 });
+						theRocket.setRocketVelocity({ 250, 0 });
 					}
 				}
 				break;
@@ -646,7 +717,7 @@ bool cGame::getInput(bool theLoop)
 				{
 					if (theRocket.getSpritePos().x > 0)
 					{
-						theRocket.setRocketVelocity({ -350, 0 });
+						theRocket.setRocketVelocity({ -250, 0 });
 					}
 				}
 				break;
