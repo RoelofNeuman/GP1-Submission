@@ -33,5 +33,7 @@ public:
 	SDL_Point getMapStartXY();
 	string getMapData();
 	void writeMapDataToFile(cFileHandler* aFile);
+
+	string scoreAsStringForFile;
 };
 #endif

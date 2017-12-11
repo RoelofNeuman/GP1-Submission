@@ -79,7 +79,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	theSoundMgr->initMixer();
 
 	score = 0;
-
+	health = 3;
 
 	// Set filename
 	theFile.setFileName("Data/usermap.dat");
@@ -111,11 +111,11 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	{
 		theFontMgr->addFont(fontList[fonts], fontsToUse[fonts], 36);
 	}
-	gameTextList = { "Bullet Purgatory", "Score: 0" };
+	gameTextList = { "Bullet Purgatory", "Score: 0", "Health 3/3" };
 	
 	theTextureMgr->addTexture("Title", theFontMgr->getFont("Draconian")->createTextTexture(theRenderer, gameTextList[0], SOLID, { 0, 255, 0, 255 }, { 0, 0, 0, 0 }));
 	theTextureMgr->addTexture("Points", theFontMgr->getFont("spaceAge")->createTextTexture(theRenderer, gameTextList[1], SOLID, { 0, 255, 0, 255 }, { 0, 0, 0, 0 }));
-	
+	theTextureMgr->addTexture("Health", theFontMgr->getFont("spaceAge")->createTextTexture(theRenderer, gameTextList[2], SOLID, { 0, 255, 0, 255 }, { 0, 0, 0, 0 }));
 
 	//store buttons
 	btnNameList = { "exit_btn", "instructions_btn", "load_btn", "menu_btn", "play_btn", "save_btn", "settings_btn" };
@@ -301,6 +301,20 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		scale = { 1, 1 };
 		tempTextTexture->renderTexture(theRenderer, tempTextTexture->getTexture(), &tempTextTexture->getTextureRect(), &pos, scale);
 
+		//render health
+
+		if (healthChanged)
+		{
+			gameTextList[2] = healthAsString.c_str();
+			theTextureMgr->addTexture("Health", theFontMgr->getFont("spaceAge")->createTextTexture(theRenderer, gameTextList[2], SOLID, { 0, 255, 0, 255 }, { 0, 0, 0, 0 }));
+			scoreChanged = false;
+		}
+
+		tempTextTexture = theTextureMgr->getTexture("Health");
+		pos = { 700, 50, tempTextTexture->getTextureRect().w, tempTextTexture->getTextureRect().h };
+		scale = { 1, 1 };
+		tempTextTexture->renderTexture(theRenderer, tempTextTexture->getTexture(), &tempTextTexture->getTextureRect(), &pos, scale);
+
 
 		SDL_RenderPresent(theRenderer);
 	}
@@ -311,13 +325,13 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	{
 		spriteBkgd.render(theRenderer, NULL, NULL, spriteBkgd.getSpriteScale());
 
-		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 400, 375 });
+		
 
-		thebuttonMgr->getBtn("menu_btn")->setSpritePos({ 500, 500 });
+		thebuttonMgr->getBtn("menu_btn")->setSpritePos({450, 500 });
 		thebuttonMgr->getBtn("menu_btn")->render(theRenderer, &thebuttonMgr->getBtn("menu_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("menu_btn")->getSpritePos(), thebuttonMgr->getBtn("menu_btn")->getSpriteScale());
-		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 500, 575 });
+		thebuttonMgr->getBtn("exit_btn")->setSpritePos({ 450, 575 });
 		thebuttonMgr->getBtn("exit_btn")->render(theRenderer, &thebuttonMgr->getBtn("exit_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("exit_btn")->getSpritePos(), thebuttonMgr->getBtn("exit_btn")->getSpriteScale());
-
+		
 	}
 	break;
 
@@ -363,6 +377,10 @@ void cGame::update(double deltaTime)
 			theAreaClicked = { 0, 0 };
 		}
 
+		score = 0;
+		
+	
+
 	}
 	break;
 
@@ -391,7 +409,7 @@ void cGame::update(double deltaTime)
 
 
 
-		// Update the Rockets position
+		// Update the Player Rockets position
 		theRocket.update(deltaTime);
 
 		// Update the visibility and position of each asteriod
@@ -485,12 +503,14 @@ void cGame::update(double deltaTime)
 		{
 			if (theEnemies2[tooLow]->getSpritePos().y >= (renderHeight - 80))
 			{
-				theEnemies2[tooLow]->setActive(false);
-
+				if (theEnemies2[tooLow] != NULL)
+				{
+					theEnemies2[tooLow]->setActive(false);
+				}
 
 			}
 		}
-
+		//when the first class of enemies are all gone a new wave will spawn
 		if (theEnemies.size() == 0)
 		{
 			for (int enemy = 0; enemy < 9; enemy++)
@@ -506,6 +526,7 @@ void cGame::update(double deltaTime)
 			}
 		}
 
+		//when the second class of enemies are all gone a new wave will spawn
 		if (theEnemies2.size() == 0)
 		{
 
@@ -523,7 +544,10 @@ void cGame::update(double deltaTime)
 		}
 
 
-
+		if (health <= 0)
+		{
+			theGameState = END;
+		}
 
 
 
@@ -540,14 +564,11 @@ void cGame::update(double deltaTime)
 				if ((*enemyIterator)->collidedWith(&(*enemyIterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
 				{
 					// if a collision set the bullet and enemies to false
-
-
 					score += 10;
 					if (theTextureMgr->getTexture("Points") != NULL)
 					{
 						theTextureMgr->deleteTexture("Points");
 					}
-
 
 					string thescore = to_string(score);   
 					ScoreAsString = "score: " + thescore;  
@@ -563,24 +584,33 @@ void cGame::update(double deltaTime)
 						(*bulletIterartor)->setActive(false);
 					}
 
+					//saving the score for the file handler and TileMap
+					string scoreAsStringForFile = ScoreAsString;
+
 					theSoundMgr->getSnd("explosion")->play(0);
+				}
+
+				//this checks if an enemy collides with the player rocket
+				if ((*enemyIterator)->collidedWith(&(*enemyIterator)->getBoundingRect(), &theRocket.getBoundingRect()))
+				{
+					if ((*enemyIterator) != NULL)
+					{
+						(*enemyIterator)->setActive(false);
+					}
 				}
 			}
 
-
+			//since the second enemy class is a different class there's more coliision detetction needed.
 			for (vector<cEnemy2*>::iterator enemy2Iterator = theEnemies2.begin(); enemy2Iterator != theEnemies2.end(); ++enemy2Iterator)
 			{
 				if ((*enemy2Iterator)->collidedWith(&(*enemy2Iterator)->getBoundingRect(), &(*bulletIterartor)->getBoundingRect()))
 				{
 					// if a collision set the bullet and enemies to false
-
-
 					score += 5;
 					if (theTextureMgr->getTexture("Points") != NULL)
 					{
 						theTextureMgr->deleteTexture("Points");
 					}
-
 
 					string thescore = to_string(score);
 					ScoreAsString = "score: " + thescore;
@@ -592,42 +622,50 @@ void cGame::update(double deltaTime)
 						(*enemy2Iterator)->setActive(false);
 					}
 
-
 					if ((*bulletIterartor) != NULL)
 					{
 						(*bulletIterartor)->setActive(false);
 					}
 					theSoundMgr->getSnd("explosion")->play(0);
 				}
-
-
-
-
-
-
-
-				for (vector<cEnemyBullet*>::iterator EnemyBulletIterartor = theEnemyBullets.begin(); enemyBulletIterartor != theEnemyBullets.end(); ++EnemyBulletIterartor)
-				{
-					if (theRocket.collidedWith(&theRocket.getBoundingRect(), &(*enemyBulletIterartor)->getBoundingRect()))
+				//this checks if an enemy2 collides with the player rocket
+				if((*enemy2Iterator)->collidedWith(&(*enemy2Iterator)->getBoundingRect(), &theRocket.getBoundingRect()))
+				{ 
+					if ((*enemy2Iterator) != NULL)
 					{
-					 //if a collision set the bullet and enemies to false
-
-						(*enemyBulletIterartor)->setActive(false);
-
+						(*enemy2Iterator)->setActive(false);
 					}
-
 				}
-					
+			}	
+		}
 
+		//collision detection for the player rocket with enemy bullets and enemy ships
+		for (vector<cEnemyBullet*>::iterator enemyBulletIterartor = theEnemyBullets.begin(); enemyBulletIterartor != theEnemyBullets.end(); ++enemyBulletIterartor)
+		{
+			if (theRocket.collidedWith(&theRocket.getBoundingRect(), &(*enemyBulletIterartor)->getBoundingRect()))
+			{
+				//if a collision set the bullet and enemies to false
 
+				(*enemyBulletIterartor)->setActive(false);
+				health --;
+				if (theTextureMgr->getTexture("Health") != NULL)
+				{
+					theTextureMgr->deleteTexture("Health");
+				}
+
+				string theHealth = to_string(health);
+				healthAsString = "Health " + theHealth +"/3"; 
+				healthChanged = true;
+				
 			}
 		}
 	}
 		break;
 	case END:
-	{
+	{	//the end screen just needs to check to things wether exit or menu is clicked
 		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, QUIT, theAreaClicked);
 		theGameState = thebuttonMgr->getBtn("menu_btn")->update(theGameState, MENU, theAreaClicked);
+		
 	}
 	break;
 	case QUIT:

@@ -42,13 +42,7 @@ Update the sprite position
 void cTileMap::initialiseMap()
 {
 	srand(time(NULL));
-	for (int row = 0; row < 8; row++)
-	{
-		for (int column = 0; column < 8; column++)
-		{
-			this->tileMap[row][column] = -1;
-		}
-	}
+	
 
 }
 /*
@@ -64,18 +58,15 @@ void cTileMap::initialiseMapFromFile(cFileHandler* aFile)
 	stringstream mapData(fileData);
 
 	// Fill map with data from file
-	int strPos = 0;
-	for (int row = 0; row < 8; row++)
-	{
-		for (int column = 0; column < 8; column++)
-		{
-			mapData >> this->tileMap[row][column]; 
+	
+		
+			 
 			if (mapData.peek() == ',')
 			{
 				mapData.ignore();
 			}
-		}
-	}
+		
+	
 	aFile->closeFile();
 }
 /*
@@ -104,14 +95,13 @@ SDL_Point cTileMap::getMapStartXY()
 string cTileMap::getMapData()
 {
 	string mapData = "";
-	for (int row = 0; row < 8; row++)
-	{
-		for (int column = 0; column < 8; column++)
-		{
-			mapData += to_string(this->tileMap[row][column]) + ',';
-		}
+	
+	
+		
+	mapData =  scoreAsStringForFile;
+		
 		mapData += '\n';
-	}
+	
 	return mapData;
 }
 

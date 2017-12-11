@@ -105,6 +105,11 @@ private:
 	string ScoreAsString;
 	bool scoreChanged;
 
+	//health related variables
+	int health;
+	string healthAsString;
+	bool healthChanged;
+
 	
 	
 };
