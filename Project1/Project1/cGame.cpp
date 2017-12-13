@@ -104,7 +104,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	}
 	// Create textures for Game Dialogue (text)
 	fontList = { "digital", "spaceAge", "Draconian" };
-	fontsToUse = { "Fonts/digital-7.ttf", "Fonts/space age.ttf", "Fonts/Draconian.ttf" };
+	fontsToUse = { "Fonts/digital-7.ttf", "Fonts/xray.ttf", "Fonts/Draconian.ttf" };
 
 	//stores the fonts
 	for (int fonts = 0; fonts < fontList.size(); fonts++)
@@ -146,9 +146,9 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 
 	// Load game sounds
-	soundList = { "theme", "shot", "explosion", "click", "enemyShot"};
-	soundTypes = { MUSIC, SFX, SFX, SFX, SFX };
-	soundsToUse = { "Audio/game music.wav", "Audio/shot007.wav", "Audio/explosion2.wav", "Audio/ButtonClick.wav", "Audio/enemyshot.wav"};
+	soundList = { "theme", "shot", "explosion", "click", "enemyShot", "friendlyhit"};
+	soundTypes = { MUSIC, SFX, SFX, SFX, SFX, SFX };
+	soundsToUse = { "Audio/game music.wav", "Audio/shot007.wav", "Audio/explosion2.wav", "Audio/ButtonClick.wav", "Audio/enemyshot.wav", "Audio/friendlyhit.wav"};
 	for (int sounds = 0; sounds < soundList.size(); sounds++)
 	{
 		theSoundMgr->add(soundList[sounds], soundsToUse[sounds], soundTypes[sounds]);
@@ -705,6 +705,8 @@ void cGame::update(double deltaTime)
 				{
 					theTextureMgr->deleteTexture("Health");
 				}
+
+				theSoundMgr->getSnd("friendlyhit")->play(0);
 
 				string theHealth = to_string(health);
 				healthAsString = "Health " + theHealth +"/3"; 
