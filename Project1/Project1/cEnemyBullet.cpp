@@ -44,6 +44,8 @@ void cEnemyBullet::update(double deltaTime)
 
 	this->setBoundingRect(this->getSpritePos());
 
+	
+
 }
 /*
 =================================================================

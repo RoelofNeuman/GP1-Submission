@@ -46,6 +46,7 @@ void cGame::fireEnemyBullet1(int enemyvariable)
 		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
 		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -25, -25 });
 		theEnemyBullets[numEnemyBullets]->setActive(true);
+		
 }
 //function that spawns an enemy bullet for enemy2 class
 void cGame::fireEnemyBullet2(int enemyvariable)
@@ -58,6 +59,7 @@ void cGame::fireEnemyBullet2(int enemyvariable)
 		theEnemyBullets[numEnemyBullets]->setSpriteDimensions(theTextureMgr->getTexture(textureName[3])->getTWidth(), theTextureMgr->getTexture(textureName[3])->getTHeight());
 		theEnemyBullets[numEnemyBullets]->setEnemyBulletVelocity({ -25, -25 });
 		theEnemyBullets[numEnemyBullets]->setActive(true);
+		
 }
 
 void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
@@ -94,8 +96,8 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	theAreaClicked = { 0, 0 };
 
 	// Store the textures
-	textureName = { "enemy1", "enemy2", "bullet player", "nemesisPellet", "theRocket","theBackground"};
-	texturesToUse = { "Images\\enemy1.png", "Images\\enemy2.png","Images\\bullet player.png", "Images\\nemesisPellet.png", "Images\\rocketSprite.png", "Images\\background.jpg"};
+	textureName = { "enemy1", "enemy2", "bullet player", "nemesisPellet", "theRocket","theBackground", "ControlsExplained"};
+	texturesToUse = { "Images\\enemy1.png", "Images\\enemy2.png","Images\\bullet player.png", "Images\\nemesisPellet.png", "Images\\rocketSprite.png", "Images\\background.jpg", "Images\\ControlsExplained.png"};
 	for (int tCount = 0; tCount < textureName.size(); tCount++)
 	{	
 		theTextureMgr->addTexture(textureName[tCount], texturesToUse[tCount]);
@@ -144,9 +146,9 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 
 
 	// Load game sounds
-	soundList = { "theme", "shot", "explosion" };
-	soundTypes = { MUSIC, SFX, SFX };
-	soundsToUse = { "Audio/game music.wav", "Audio/shot007.wav", "Audio/explosion2.wav" };
+	soundList = { "theme", "shot", "explosion", "click", "enemyShot"};
+	soundTypes = { MUSIC, SFX, SFX, SFX, SFX };
+	soundsToUse = { "Audio/game music.wav", "Audio/shot007.wav", "Audio/explosion2.wav", "Audio/ButtonClick.wav", "Audio/enemyshot.wav"};
 	for (int sounds = 0; sounds < soundList.size(); sounds++)
 	{
 		theSoundMgr->add(soundList[sounds], soundsToUse[sounds], soundTypes[sounds]);
@@ -213,6 +215,10 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		thebuttonMgr->getBtn("load_btn")->render(theRenderer, &thebuttonMgr->getBtn("load_btn")->getSpriteDimensions(), &thebuttonMgr->getBtn("load_btn")->getSpritePos(), thebuttonMgr->getBtn("load_btn")->getSpriteScale());
 		thebuttonMgr->getBtn("load_btn")->setSpritePos({ 50, 375 });
 	
+		tempTexture = theTextureMgr->getTexture("ControlsExplained");
+		pos = { 350, 450, tempTexture->getTextureRect().w, tempTexture->getTextureRect().h };
+		scale = { 1, 1 };
+		tempTexture->renderTexture(theRenderer, tempTexture->getTexture(), &tempTexture->getTextureRect(), &pos, scale);
 	}
 
 
@@ -314,13 +320,9 @@ void cGame::render(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 		scale = { 1, 1 };
 		tempTextTexture->renderTexture(theRenderer, tempTextTexture->getTexture(), &tempTextTexture->getTextureRect(), &pos, scale);
 
-		
-		
-		//renders the points for display at the end
-	
-		gameTextList[4] = ScoreAsString.c_str();
-		theTextureMgr->addTexture("PointsFinal", theFontMgr->getFont("spaceAge")->createTextTexture(theRenderer, gameTextList[4], SOLID, { 0, 255, 0, 255 }, { 0, 0, 0, 0 }));
-		tempTextTexture = theTextureMgr->getTexture("PointsFinal");
+		gameTextList[1] = ScoreAsString.c_str();
+		theTextureMgr->addTexture("Points", theFontMgr->getFont("spaceAge")->createTextTexture(theRenderer, gameTextList[1], SOLID, { 0, 255, 0, 255 }, { 0, 0, 0, 0 }));
+		tempTextTexture = theTextureMgr->getTexture("Points");
 		pos = { 315, 275, tempTextTexture->getTextureRect().w, tempTextTexture->getTextureRect().h };
 		scale = { 1, 1 };
 		tempTextTexture->renderTexture(theRenderer, tempTextTexture->getTexture(), &tempTextTexture->getTextureRect(), &pos, scale);
@@ -367,6 +369,25 @@ void cGame::update(double deltaTime)
 	//all functionality that has to be checked on the opening screen/menu
 	case MENU:
 	{
+		//deletes game variabes (health and score so it can redraw)
+		health = 3;
+		if (theTextureMgr->getTexture("Health") != NULL)
+		{
+			theTextureMgr->deleteTexture("Health");
+		}
+		string theHealth = to_string(health);
+		healthAsString = "Health " + theHealth + "/3";
+		healthChanged = true;
+
+		score = 0;
+		if (theTextureMgr->getTexture("Points") != NULL)
+		{
+			theTextureMgr->deleteTexture("Points");
+		}
+		string thescore = to_string(score);
+		ScoreAsString = "score: " + thescore;
+		scoreChanged = true;
+
 		if (theGameState == PLAYING)
 		{
 			//removes all enemies so they can be reset
@@ -516,6 +537,7 @@ void cGame::update(double deltaTime)
 				if (theEnemies[firecheck] != NULL)
 				{
 					fireEnemyBullet1(firecheck);
+					theSoundMgr->getSnd("enemyShot")->play(0);
 				}
 			}
 		}
@@ -528,6 +550,7 @@ void cGame::update(double deltaTime)
 				if (theRocket.getSpritePos().x == theEnemies2[firecheck]->getSpritePos().x)
 				{
 					fireEnemyBullet2(firecheck);
+					theSoundMgr->getSnd("enemyShot")->play(0);
 				}
 			}
 		}
@@ -552,7 +575,6 @@ void cGame::update(double deltaTime)
 				theEnemies.push_back(new cEnemy);
 				theEnemies[enemy]->setSpritePos({ 100 * enemy, 150 });
 				theEnemies[enemy]->setSpriteTranslation({ 100, 0 });
-
 				theEnemies[enemy]->setTexture(theTextureMgr->getTexture(textureName[0]));
 				theEnemies[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[0])->getTWidth(), theTextureMgr->getTexture(textureName[0])->getTHeight());
 				theEnemies[enemy]->setEnemyVelocity({ 0, 0 });
@@ -569,7 +591,6 @@ void cGame::update(double deltaTime)
 				theEnemies2.push_back(new cEnemy2);
 				theEnemies2[enemy]->setSpritePos({ 100 * enemy, 50 });
 				theEnemies2[enemy]->setSpriteTranslation({ 0, 100 });
-
 				theEnemies2[enemy]->setTexture(theTextureMgr->getTexture(textureName[1]));
 				theEnemies2[enemy]->setSpriteDimensions(theTextureMgr->getTexture(textureName[1])->getTWidth(), theTextureMgr->getTexture(textureName[1])->getTHeight());
 				theEnemies2[enemy]->setEnemy2Velocity({ 0, 0 });
@@ -582,8 +603,6 @@ void cGame::update(double deltaTime)
 		{
 			theGameState = END;
 		}
-
-
 
 		/*
 		==============================================================
@@ -697,28 +716,17 @@ void cGame::update(double deltaTime)
 		break;
 	case END:
 	{	//the end screen just needs to check to things wether exit or menu is clicked
+		
+		
 
-		//deletes game variabes (health and score so it can redraw)
-		health = 3;
-		if (theTextureMgr->getTexture("Health") != NULL)
-		{
-			theTextureMgr->deleteTexture("Health");
-		}
-		string theHealth = to_string(health);
-		healthAsString = "Health " + theHealth + "/3";
-		healthChanged = true;
 
-		score = 0;
-		if (theTextureMgr->getTexture("Points") != NULL)
-		{
-			theTextureMgr->deleteTexture("Points");
-		}
-		string thescore = to_string(score);
-		ScoreAsString = "score: " + thescore;
-		scoreChanged = true;
+
+		//renders the points for display at the end
+		
 
 		//checks if buttons are clicked
 		theGameState = thebuttonMgr->getBtn("exit_btn")->update(theGameState, QUIT, theAreaClicked);
+		
 		theGameState = thebuttonMgr->getBtn("menu_btn")->update(theGameState, MENU, theAreaClicked);
 	}
 	break;
@@ -745,7 +753,9 @@ bool cGame::getInput(bool theLoop)
 				{
 				case SDL_BUTTON_LEFT:
 				{
+					
 					theAreaClicked = {event.motion.x, event.motion.y};
+					
 				}
 				break;
 				case SDL_BUTTON_RIGHT:

@@ -179,6 +179,9 @@ xcopy /Y "C:\Users\Roelof\Documents\Uni\Programming 1\Sdl2\SDL2_ttf-2.0.14\lib\x
     <ClCompile Include="cTextureMgr.cpp" />
     <ClCompile Include="cTileMap.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Audio\shot007.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

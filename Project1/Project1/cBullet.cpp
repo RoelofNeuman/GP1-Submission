@@ -44,6 +44,11 @@ void cBullet::update(double deltaTime)
 
 	this->setBoundingRect(this->getSpritePos());
 
+	if (currentSpritePos.y <= 0)
+	{
+		this->setActive(false);
+	}
+
 }
 /*
 =================================================================
